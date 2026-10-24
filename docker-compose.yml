@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  target-api:
+    build: .
+    container_name: mock-target-api
+    command: ["uvicorn", "target_api.server:app", "--host", "0.0.0.0", "--port", "8000"]
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  perf-runner:
+    build: .
+    container_name: perf-gate-runner
+    depends_on:
+      target-api:
+        condition: service_healthy
+    command: >
+      bash -c "mkdir -p reports &&
+               locust -f perf_suite/locustfile.py --headless -u 20 -r 5 --run-time 15s --host http://target-api:8000 --csv=reports/perf --html=reports/performance.html &&
+               python perf_suite/gate_runner.py perf_suite/thresholds.json reports/perf_stats.csv"
+    volumes:
+      - ./reports:/app/reports

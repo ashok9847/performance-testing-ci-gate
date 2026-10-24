@@ -1,0 +1,22 @@
+{
+  "global": {
+    "max_failure_rate_percent": 1.0,
+    "median_response_time_ms": 100.0,
+    "p95_response_time_ms": 250.0,
+    "p99_response_time_ms": 500.0
+  },
+  "endpoints": {
+    "/health": {
+      "p95_response_time_ms": 60.0
+    },
+    "/api/v1/accounts/[id]/balance": {
+      "p95_response_time_ms": 150.0
+    },
+    "/api/v1/payments/transfer": {
+      "p95_response_time_ms": 250.0
+    },
+    "/api/v1/reports/statement": {
+      "p95_response_time_ms": 350.0
+    }
+  }
+}
